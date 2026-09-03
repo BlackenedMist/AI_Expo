@@ -1,0 +1,196 @@
+/* ============================================
+   Skills Alliance – AI Working Profile Theme
+   ============================================ */
+
+:root {
+  --green: #18c928;
+  --ink: #0a0b0c;
+  --muted: #9ca3af;
+  --panel: #171819;
+}
+
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #090a0a;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Layout */
+.wrap {
+  min-height: 100vh;
+  padding: 42px 6vw 34px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  right: -160px;
+  top: -160px;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(24, 201, 40, 0.22), rgba(24, 201, 40, 0) 68%);
+  pointer-events: none;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+main {
+  max-width: 1100px;
+  margin: 76px auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 60px;
+  color: #777;
+  font-size: 13px;
+}
+
+/* Typography */
+.eyebrow {
+  font-size: 15px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.kicker {
+  color: var(--green);
+  letter-spacing: 4px;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 22px;
+}
+
+h1 {
+  font-size: clamp(54px, 8vw, 105px);
+  line-height: 0.9;
+  letter-spacing: -5px;
+  margin: 0 0 32px;
+  max-width: 950px;
+}
+
+h1 span {
+  color: var(--green);
+}
+
+.lead {
+  font-size: clamp(21px, 2.4vw, 32px);
+  line-height: 1.35;
+  max-width: 850px;
+  color: #f1f1f1;
+}
+
+/* Logo */
+.logo {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: grid;
+  place-items: center;
+  position: relative;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.logo::after {
+  content: "";
+  position: absolute;
+  inset: -14px -20px -14px auto;
+  width: 46px;
+  border-radius: 0 60px 60px 0;
+  background: var(--green);
+  z-index: -1;
+}
+
+/* Card */
+.card {
+  margin-top: 62px;
+  background: rgba(25, 25, 25, 0.96);
+  border: 1px solid #303030;
+  border-radius: 28px;
+  padding: 42px;
+  max-width: 1000px;
+}
+
+.profile-label {
+  color: var(--green);
+  font-size: 14px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.profile {
+  font-size: clamp(38px, 5vw, 68px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  margin-bottom: 22px;
+}
+
+.message {
+  font-size: 22px;
+  line-height: 1.5;
+  color: #e8e8e8;
+  max-width: 800px;
+}
+
+.opportunity {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #333;
+  color: #cfd2d4;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.score {
+  margin-top: 22px;
+  color: #8f969c;
+  font-size: 14px;
+}
+
+.error {
+  color: #ff8f8f;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 650px) {
+  .wrap {
+    padding: 28px 22px 28px;
+  }
+
+  .logo {
+    width: 66px;
+    height: 66px;
+  }
+
+  .card {
+    padding: 28px;
+    border-radius: 20px;
+  }
+
+  h1 {
+    letter-spacing: -3px;
+  }
+}
