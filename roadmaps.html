@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ABSA AI Academy — Learning Roadmaps</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .roadmap-header { text-align: center; padding: 60px 20px 40px; }
+    .roadmap-header h1 { font-size: clamp(36px, 6vw, 72px); letter-spacing: -3px; margin-bottom: 12px; }
+    .roadmap-header p { font-size: 18px; color: var(--muted); max-width: 700px; margin: 0 auto; }
+
+    .level-section { margin: 0 auto 60px; max-width: 1200px; padding: 0 6vw; }
+    .level-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px; padding-bottom: 16px;
+      border-bottom: 2px solid #303030;
+    }
+    .level-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 48px; height: 48px; border-radius: 14px;
+      font-size: 20px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .level-info h2 { margin: 0; font-size: 28px; letter-spacing: -1px; }
+    .level-info p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+    .level-stats { margin-left: auto; text-align: right; color: var(--muted); font-size: 14px; white-space: nowrap; }
+    .level-stats span { color: var(--green); font-weight: 700; }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .course-card {
+      background: rgba(25,25,25,.96);
+      border: 1px solid #303030;
+      border-radius: 20px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .course-card:hover { border-color: var(--green); transform: translateY(-2px); }
+    .course-card .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .course-card .track-tag {
+      font-size: 11px; letter-spacing: 1.5px; font-weight: 700;
+      color: var(--green); text-transform: uppercase;
+    }
+    .course-card .duration-tag {
+      margin-left: auto; font-size: 12px; color: var(--muted);
+      background: rgba(255,255,255,.06); padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .course-card h3 { margin: 0 0 10px; font-size: 18px; font-weight: 700; line-height: 1.3; }
+    .course-card .audience { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .course-card .description { font-size: 14px; color: #d1d5db; line-height: 1.5; margin-bottom: 14px; }
+    .course-card .objectives-toggle {
+      background: none; border: 1px solid #444; color: var(--muted);
+      font-size: 12px; padding: 6px 14px; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .course-card .objectives-toggle:hover { border-color: var(--green); color: var(--green); }
+    .course-card .objectives-list {
+      margin-top: 14px; padding: 0; list-style: none;
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+    }
+    .course-card .objectives-list.open { max-height: 500px; }
+    .course-card .objectives-list li {
+      font-size: 13px; color: #b0b5bb; padding: 5px 0 5px 16px;
+      position: relative; line-height: 1.4;
+    }
+    .course-card .objectives-list li::before {
+      content: ""; position: absolute; left: 0; top: 11px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+    }
+
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; padding: 20px 6vw 10px;
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(9,10,10,.92); backdrop-filter: blur(12px);
+    }
+    .filter-btn {
+      background: rgba(255,255,255,.06); border: 1px solid #333;
+      color: var(--muted); font-size: 13px; padding: 7px 16px;
+      border-radius: 20px; cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--green); color: var(--green); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 16px; }
+
+    @media (max-width: 650px) {
+      .courses-grid { grid-template-columns: 1fr; }
+      .level-header { flex-wrap: wrap; }
+      .level-stats { margin-left: 0; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="glow"></div>
+  <header>
+    <div class="eyebrow">ABSA AI ACADEMY</div>
+    <a href="questionnaire.html" style="color:var(--green);font-size:14px;text-decoration:none;border:1px solid var(--green);padding:6px 16px;border-radius:20px;">Take the Quiz</a>
+  </header>
+
+  <main>
+    <div class="roadmap-header">
+      <h1>Your AI Learning <span>Roadmap</span></h1>
+      <p>7 levels from AI literacy to advanced research. Find your path and build your skills step by step.</p>
+    </div>
+
+    <div class="filter-bar" id="filterBar"></div>
+    <div id="roadmap"></div>
+  </main>
+
+  <footer>ABSA AI Academy Roadmaps &middot; AI Expo 2026</footer>
+</div>
+
+<script src="airtable.js"></script>
+<script>
+(function() {
+  const LEVEL_COLORS = ['#3b82f6','#22c55e','#eab308','#f97316','#ef4444','#a855f7','#78350f'];
+
+  const COURSE_DATA = {"meta":{"title":"ABSA AI Academy \u2014 Course Catalog","version":"1.0","lastUpdated":"2026-08-26","totalCourses":37},"levels":[{"level":1,"name":"AI Literacy","color":"#3b82f6","description":"Essential knowledge for starting any AI journey"},{"level":2,"name":"AI Practitioner","color":"#22c55e","description":"Hands-on AI skills for business users"},{"level":3,"name":"AI Specialist","color":"#eab308","description":"Deep expertise in AI domains"},{"level":4,"name":"AI Engineer","color":"#f97316","description":"Technical mastery of AI development"},{"level":5,"name":"AI Governance & Security","color":"#ef4444","description":"Risk, compliance, and security"},{"level":6,"name":"AI Leadership","color":"#a855f7","description":"Strategic executive decision-making"},{"level":7,"name":"Advanced AI / Research","color":"#78350f","description":"Cutting-edge research and innovation"}],"tracks":[{"id":"foundational","name":"Foundational","icon":"\ud83c\udfb1"},{"id":"developer","name":"Developer","icon":"\ud83d\udcbb"},{"id":"marketing","name":"Marketing","icon":"\ud83d\udcca"},{"id":"prompts-agents","name":"Prompts & Agents","icon":"\u270d\ufe0f"},{"id":"data-architecture","name":"Data & Architecture","icon":"\ud83d\uddc4\ufe0f"},{"id":"security-governance","name":"Security & Governance","icon":"\ud83d\udee1\ufe0f"},{"id":"financial","name":"Financial","icon":"\ud83d\udcb0"},{"id":"executive","name":"Executive","icon":"\ud83c\udfdb\ufe0f"},{"id":"specialist","name":"Specialist","icon":"\ud83c\udfaf"}],"profiles":[{"id":"strategist","name":"AI Strategist","icon":"\ud83e\udded","description":"You think beyond personal productivity toward organisational value, governance, capability and transformation.","weight":{"leadership":3,"technical":0,"creative":1,"data":1,"security":2,"business":3}},{"id":"builder","name":"AI Builder","icon":"\ud83d\udc68\u200d\ud83d\udcbb","description":"You love building things \u2014 code, systems, agents. You want to get your hands dirty with AI development.","weight":{"leadership":0,"technical":3,"creative":0,"data":1,"security":0,"business":1}},{"id":"investigator","name":"AI Investigator","icon":"\ud83d\udd75\ufe0f","description":"You are drawn to data, analysis, and finding patterns. You want AI to help you uncover insights.","weight":{"leadership":0,"technical":1,"creative":0,"data":3,"security":1,"business":1}},{"id":"creator","name":"AI Creator","icon":"\ud83c\udfa8","description":"You see AI as a creative tool \u2014 for content, design, marketing, and audience engagement.","weight":{"leadership":0,"technical":0,"creative":3,"data":0,"security":0,"business":2}},{"id":"guardian","name":"AI Guardian","icon":"\ud83d\udee1\ufe0f","description":"You care about safety, compliance, governance, and making sure AI is used responsibly.","weight":{"leadership":1,"technical":0,"creative":0,"data":1,"security":3,"business":2}},{"id":"data_specialist","name":"AI Data Specialist","icon":"\ud83d\udcca","description":"You work with data infrastructure, pipelines, and architecture. AI is only as good as its data.","weight":{"leadership":0,"technical":2,"creative":0,"data":3,"security":1,"business":0}}],"courses":[{"id":"ml-ai-literacy","title":"AI Literacy for Everyone","track":"foundational","level":1,"category":"Foundational","targetAudience":"All ABSA employees","durationHours":16,"description":"Gateway course for anyone starting their AI journey. Covers what AI is, what it can and cannot do, and how to use it responsibly in daily work.","objectives":["Understand what AI, machine learning, and GenAI are","Learn what LLMs and AI agents are","Recognise what AI can and cannot do","Understand hallucinations and how to verify AI outputs","Learn effective prompting techniques","Apply data privacy and confidentiality best practices","Identify AI ethics issues, deepfakes, and AI scams","Use AI productively while maintaining human verification"]},{"id":"ml-model-ecosystems","title":"Model Ecosystems & Local Implementation","track":"foundational","level":1,"category":"Foundational","targetAudience":"IT managers, security leads, developers","durationHours":24,"description":"Distinguish between general AI and LLMs, set up local LLMs to keep banking data private, and evaluate local vs cloud trade-offs.","objectives":["Distinguish between general AI and specialised LLMs","Set up local LLM environments using Ollama","Evaluate cost, performance, and security trade-offs","Select appropriate open-weights models for internal use","Compare local vs cloud-based model deployment"]},{"id":"ml-model-training","title":"Fundamentals of AI Model Training","track":"foundational","level":2,"category":"Foundational","targetAudience":"Junior data scientists, technical leads","durationHours":30,"description":"Learn supervised, unsupervised, and reinforcement learning, the ML workflow pipeline, fine-tuning strategies, and when to train vs use prompt engineering.","objectives":["Understand supervised, unsupervised, and reinforcement learning","Learn the ML pipeline from data collection to backpropagation","Adapt pre-trained models via fine-tuning for banking tasks","Determine when custom training is necessary vs Prompt Engineering or RAG","Measure the business ROI of model training"]},{"id":"dl-python-backend","title":"Python AI Backend Developer","track":"developer","level":4,"category":"Core AI Development","targetAudience":"Backend developers","durationHours":48,"description":"Build the brains of AI applications using Python \u2014 FastAPI, LangChain, vector databases, and model hardening.","objectives":["Build high-performance RESTful APIs using FastAPI for AI predictions","Integrate LLMs and Vector Databases using LangChain","Implement data-driven logic and automated data pipelines","Architect secure backends with model hardening techniques"]},{"id":"dl-java-enterprise","title":"Java AI Enterprise Developer","track":"developer","level":4,"category":"Core AI Development","targetAudience":"Enterprise Java developers","durationHours":48,"description":"Implement AI in robust, scalable enterprise environments with Spring Boot, Spring AI, and LangChain4j.","objectives":["Build production-grade AI microservices using Spring Boot and Spring AI","Standardise AI agent interactions using LangChain4j","Manage high-concurrency AI requests with JPA/Hibernate","Implement enterprise RBAC for AI-powered features"]},{"id":"dl-frontend-ai","title":"Frontend Developer: AI-Driven Interfaces","track":"developer","level":4,"category":"Core AI Development","targetAudience":"Frontend developers","durationHours":40,"description":"Create the user-facing side of AI with React, TypeScript, streaming UI patterns, and Vercel AI SDK.","objectives":["Build responsive, component-based UIs with React and Tailwind CSS","Ensure type-safe code and API integration with TypeScript","Master streaming UI patterns for real-time LLM responses","Integrate Vercel AI SDK for seamless backend connection"]},{"id":"dl-fullstack-python","title":"Full-Stack Python Master: AI-Assisted","track":"developer","level":4,"category":"Core AI Development","targetAudience":"Full-stack developers","durationHours":64,"description":"Comprehensive course combining Python backends with React frontends, using GitHub Copilot and Cursor to accelerate the build.","objectives":["Master the full web app lifecycle from Python API to React deployment","Leverage GitHub Copilot and Cursor to accelerate coding and testing","Implement agentic workflows for document analysis and image generation","Deploy full-stack apps using CI/CD pipelines and Docker"]},{"id":"dl-fullstack-java","title":"Full-Stack Java Master: AI-Assisted","track":"developer","level":4,"category":"Core AI Development","targetAudience":"Senior full-stack developers","durationHours":64,"description":"Enterprise full-stack course \u2014 Java Spring Boot with React frontends, AI-aided refactoring, multi-agent orchestration, and load testing.","objectives":["Synthesize Java Spring Boot backends with TypeScript/React frontends","Use AI assistants to refactor legacy code and generate boilerplate","Design multi-agent orchestration connecting frontend to Java services","Perform AI-assisted performance tuning and load testing"]},{"id":"mk-marketing-analyst","title":"AI Marketing Analyst: Trends & Social Intelligence","track":"marketing","level":3,"category":"Marketing","targetAudience":"Digital marketers, social media managers, brand strategists","durationHours":36,"description":"Use AI for social listening, market trend identification, predictive analytics, and competitive benchmarking.","objectives":["Leverage AI for social listening and market trend identification","Uncover deep consumer insights and build detailed personas","Use ML to forecast consumer behaviour and predict engagement","Implement AI tools for real-time competitor monitoring","Address ethical considerations including data privacy and algorithmic bias"]},{"id":"mk-creative-specialist","title":"AI Creative Specialist: Image & Video Generation","track":"marketing","level":3,"category":"Marketing","targetAudience":"Content creators, designers, visual marketers","durationHours":36,"description":"Produce professional marketing visuals and video content using Midjourney, Runway, Synthesia, and digital avatars.","objectives":["Produce professional marketing imagery using Midjourney and DALL-E","Create multi-scene video content using Runway Gen-4 and Google Veo","Generate marketing videos with digital avatars and multilingual voiceovers","Integrate AI visual production into marketing workflows","Master legal landscape of AI-generated media and brand safety"]},{"id":"pa-prompt-engineer","title":"Advanced Prompt Engineer: Agentic Systems","track":"prompts-agents","level":3,"category":"Prompts & Agents","targetAudience":"Power users and analysts","durationHours":32,"description":"Move from static prompts to dynamic agentic systems \u2014 Chain-of-Thought, ReAct, tool-use prompting, and modular skills.","objectives":["Design structured persona foundations for autonomous agents","Master Chain-of-Thought, ReAct, and Reflexion reasoning patterns","Design prompts for tool-use and API integration","Create modular, portable skills for subagent sharing"]},{"id":"pa-nocode-architect","title":"No-Code AI Architect: Automated Workflows","track":"prompts-agents","level":2,"category":"Prompts & Agents","targetAudience":"Entrepreneurs, non-technical professionals","durationHours":24,"description":"Build functional AI applications and business automations without writing code \u2014 using Make, Zapier, and n8n.","objectives":["Translate business workflows into automated triggers and actions","Build digital assistants with planning and memory capabilities","Connect AI models to calendars, CRM tools, and email","Design multi-agent collaboration for research and summary pipelines"]},{"id":"pa-agent-developer","title":"AI Agent Developer: Orchestration & Scaling","track":"prompts-agents","level":4,"category":"Prompts & Agents","targetAudience":"Developers focused on agent systems","durationHours":48,"description":"Build multi-agent systems with CrewAI, LangGraph, and OpenAI Agents SDK. Implement MCP and scale agent deployments.","objectives":["Build multi-agent systems using CrewAI, LangGraph, or OpenAI Agents SDK","Implement Model Context Protocol (MCP) for secure tool interfaces","Develop agents that autonomously write and refactor code","Implement load balancing and performance monitoring for agents"]},{"id":"pa-agents-automation","title":"AI Agents and Automation Architecture","track":"prompts-agents","level":4,"category":"Prompts & Agents","targetAudience":"Senior developers, architects","durationHours":40,"description":"Architect autonomous multi-agent systems with MCP, memory management, reflection loops, and red-team testing.","objectives":["Architect multi-agent systems for autonomous task execution","Master MCP for standardised tool interfaces","Implement memory management and reflection loops for multi-step reasoning","Plan and execute red-team exercises for agentic systems"]},{"id":"da-data-architecture","title":"AI & Data Architecture: RAG, Lakehouses, Predictive Insights","track":"data-architecture","level":4,"category":"Data & Architecture","targetAudience":"Data engineers, architects, senior analysts","durationHours":56,"description":"Architect data lakehouses, build RAG systems, and deploy predictive banking analytics for real-time decision-making.","objectives":["Architect modern lakehouse environments for unified banking data","Build high-performance RAG search across banking knowledge","Deepen predictive analytics for relationship managers","Automate data-entry and insight extraction via natural language","Activate trusted data at the moment of banking decisions"]},{"id":"da-omnichannel","title":"Omnichannel Assistants: Customer & Employee Portals","track":"data-architecture","level":3,"category":"Data & Architecture","targetAudience":"CX designers, internal tools developers, ops managers","durationHours":40,"description":"Unify physical and digital touchpoints \u2014 WhatsApp banking, employee AI assistants, mobile apps, and agentic customer service.","objectives":["Integrate secure payment gateways and AI chatbots within WhatsApp","Deploy internal assistants to streamline administrative tasks","Deploy conversational AI across mobile, phone, and email channels","Move beyond chatbots to agentic AI for autonomous task handling","Implement secure omnichannel authentication best practices"]},{"id":"sg-security-governance","title":"AI Security and Governance","track":"security-governance","level":5,"category":"Security & Governance","targetAudience":"Security professionals, compliance officers","durationHours":40,"description":"Defend against adversarial attacks, navigate AI regulations, configure RBAC and audit logging, and conduct AI risk assessments.","objectives":["Identify and defend against data poisoning and prompt injection","Navigate global AI regulatory landscapes","Configure RBAC and audit logging for AI environments","Conduct AI risk assessments for legal and ethical compliance"]},{"id":"sg-devops","title":"AI DevOps & Deployment: Development-to-Production","track":"security-governance","level":5,"category":"Security & Governance","targetAudience":"DevOps engineers, SREs, lead developers","durationHours":48,"description":"Architect CI/CD for AI, master Docker/Kubernetes, implement automated testing, blue-green deployments, and model monitoring.","objectives":["Architect CI/CD pipelines for AI models and full-stack apps","Master Docker and Kubernetes for consistent AI environments","Implement automated testing including AI evaluation suites","Learn blue-green and canary deployment strategies","Set up real-time monitoring for model drift and API latency"]},{"id":"fn-algo-trading","title":"Algorithmic Trading & Investment Advisory","track":"financial","level":5,"category":"Financial","targetAudience":"Quantitative analysts, portfolio managers","durationHours":60,"description":"Develop AI for high-frequency trading, sentiment-driven portfolio management, and advanced risk modelling.","objectives":["Develop AI models for high-frequency trading and liquidity optimization","Use NLP for real-time market sentiment analysis","Implement predictive models for credit, market, and internal risks","Deploy autonomous agents for multi-asset portfolio management"]},{"id":"fn-regtech","title":"AI-First Regulatory Compliance & RegTech","track":"financial","level":5,"category":"Financial","targetAudience":"Compliance officers, regulatory analysts","durationHours":40,"description":"Automate KYC/AML journeys, develop Explainable AI for regulators, and apply ethical banking frameworks.","objectives":["Transition to real-time, AI-driven compliance monitoring","Master AI-native KYC and AML journeys","Make complex model decisions transparent to regulators","Apply professional ethical banking frameworks updated for 2026"]},{"id":"ex-executive-strategy","title":"Executive Strategy: AI ROI and Institutional Transformation","track":"executive","level":6,"category":"Executive","targetAudience":"C-suite executives, senior directors","durationHours":36,"description":"Define a business-linked AI vision, measure ROI, manage change, and lead organisational AI transformation.","objectives":["Define a business-linked AI vision for ABSA's bottom line","Master build-vs-buy frameworks and ROI measurement","Establish ethical guidelines for responsible AI development","Create governance frameworks aligned with regulatory expectations","Lead organisational transformation and foster a culture of innovation"]},{"id":"sp-ai-product-mgmt","title":"AI Product Management & AI Transformation","track":"specialist","level":3,"category":"Specialist","targetAudience":"Product managers, solutions architects","durationHours":40,"description":"Identify valuable AI use cases, build business cases, design AI MVPs, and manage AI product lifecycles from prototype to production.","objectives":["Identify valuable AI use cases through opportunity assessments","Translate business problems into AI solutions","Build AI business cases and build-vs-buy decisions","Design AI MVPs and move from prototype to production","Manage AI product lifecycles and stakeholder adoption"]},{"id":"sp-ai-evaluation","title":"AI Evaluation & Quality Engineering","track":"specialist","level":4,"category":"Specialist","targetAudience":"QA engineers, technical leads","durationHours":36,"description":"Hallucination testing, bias testing, RAG evaluation, LLM-as-a-judge, red-team testing, and production monitoring.","objectives":["Implement hallucination, accuracy, and relevance testing","Conduct bias, toxicity, and groundedness evaluation","Evaluate RAG systems, agents, and tool-use performance","Use LLM-as-a-judge and human evaluation benchmarks","Set up production monitoring for model drift and cost/latency"]},{"id":"sp-data-governance","title":"AI Data Governance & Data Quality","track":"specialist","level":5,"category":"Specialist","targetAudience":"Data stewards, governance analysts","durationHours":32,"description":"Data lineage, classification, quality, access control, training-data governance, and synthetic data for banking compliance.","objectives":["Implement data lineage, ownership, and classification","Ensure data quality and master data management","Manage data access, retention, and residency","Govern training data, synthetic data, and data anonymisation","Secure RAG data governance and knowledge-base governance"]},{"id":"sp-model-risk","title":"AI Model Risk Management","track":"specialist","level":5,"category":"Specialist","targetAudience":"Risk managers, model validators","durationHours":40,"description":"Model validation, documentation, performance monitoring, bias detection, and foundation-model risk in financial services.","objectives":["Perform model validation, documentation, and assumption review","Monitor model performance, drift, and bias","Implement explainability and model approval workflows","Maintain model inventory and retirement processes","Manage third-party and foundation-model risk"]},{"id":"sp-financial-crime","title":"AI for Financial Crime & Fraud","track":"specialist","level":5,"category":"Specialist","targetAudience":"Fraud analysts, compliance officers","durationHours":44,"description":"Fraud detection, anomaly detection, AML, behavioural analytics, network analysis, and explainable fraud models.","objectives":["Implement AI-driven fraud and anomaly detection","Deploy real-time transaction monitoring for AML/KYC","Use behavioural analytics and network analysis for fraud prevention","Reduce false positives with explainable fraud models","Conduct financial crime investigation with AI assistance"]},{"id":"sp-graph-ai","title":"Graph AI","track":"specialist","level":4,"category":"Specialist","targetAudience":"Data scientists, security analysts","durationHours":36,"description":"Analyse banking relationship networks \u2014 Customer \u2192 Account \u2192 Transaction \u2192 Device \u2192 Merchant \u2014 for fraud, AML, and cybersecurity.","objectives":["Model banking relationship networks as graphs","Apply graph algorithms for fraud and AML detection","Use graph AI for cybersecurity and identity verification","Analyse customer relationship networks for insights"]},{"id":"sp-document-ai","title":"Document AI Specialist","track":"specialist","level":3,"category":"Specialist","targetAudience":"Operations staff, document processors","durationHours":32,"description":"OCR, document classification, information extraction, contract analysis, financial statement analysis, and multimodal LLMs for documents.","objectives":["Implement OCR and document classification at scale","Extract information from contracts, IDs, and financial statements","Process forms and extract tables automatically","Use multimodal LLMs for RAG over documents","Build human verification workflows"]},{"id":"sp-voice-ai","title":"Voice AI & Conversational Intelligence","track":"specialist","level":3,"category":"Specialist","targetAudience":"CX teams, call centre managers","durationHours":36,"description":"Speech-to-text, text-to-speech, call-centre AI, real-time transcription, sentiment analysis, and multilingual AI for South Africa.","objectives":["Implement speech-to-text and text-to-speech systems","Deploy call-centre AI with real-time transcription","Analyse sentiment and detect intent in conversations","Build agent assist and call summarisation tools","Implement voice authentication and deepfake detection","Support multilingual AI for South African languages"]},{"id":"sp-multimodal","title":"Multimodal AI Engineer","track":"specialist","level":4,"category":"Specialist","targetAudience":"AI engineers, technical specialists","durationHours":44,"description":"Work with text + images + audio + video + documents \u2014 vision-language models, multimodal RAG, and banking document intelligence.","objectives":["Build vision-language and audio-language models","Implement image, video, and document understanding","Design multimodal RAG systems","Create multimodal agents with voice + vision","Apply multimodal AI to banking document intelligence"]},{"id":"sp-ai-ux","title":"AI UX & Human-AI Interaction","track":"specialist","level":3,"category":"Specialist","targetAudience":"UX designers, product designers","durationHours":28,"description":"Design AI interfaces, conversational UX, trust in AI, human-in-the-loop systems, and accessibility for non-technical users.","objectives":["Design intuitive AI interfaces for banking customers","Build conversational UX with appropriate AI transparency","Implement human-in-the-loop and error recovery patterns","Design for accessibility and non-technical users","Avoid automation bias in AI-assisted decision making"]},{"id":"sp-workforce","title":"AI Workforce Transformation","track":"specialist","level":6,"category":"Specialist","targetAudience":"HR leaders, department heads","durationHours":28,"description":"AI literacy, job redesign, skills mapping, workforce planning, reskilling, and measuring AI maturity across the organisation.","objectives":["Redesign roles for human-AI collaboration","Map AI skills and plan workforce transformation","Implement AI adoption and employee AI assistant programmes","Measure AI productivity and maturity","Build reskilling and upskilling programmes with AI champions"]},{"id":"sp-finops","title":"AI FinOps & Economics","track":"specialist","level":4,"category":"Specialist","targetAudience":"Technical leads, finance analysts","durationHours":28,"description":"Token economics, GPU/cloud costs, inference economics, model selection, cost optimisation, and AI infrastructure economics.","objectives":["Understand token economics and GPU/cloud AI costs","Calculate cost per inference and cost per customer interaction","Optimise costs through model routing, caching, and quantisation","Evaluate small vs large models and local vs cloud economics","Build AI infrastructure cost models"]},{"id":"sp-ai-safety","title":"AI Safety & Responsible AI","track":"security-governance","level":5,"category":"Security & Governance","targetAudience":"AI engineers, compliance officers","durationHours":32,"description":"AI alignment, guardrails, agent containment, safe tool use, and responsible deployment \u2014 distinct from security and governance.","objectives":["Understand AI alignment and guardrail implementation","Implement human oversight for autonomous systems","Design agent containment and safe tool use","Evaluate dangerous outputs and misuse scenarios","Build responsible deployment and AI incident response processes"]},{"id":"sp-incident-response","title":"AI Incident Response & Resilience","track":"security-governance","level":5,"category":"Security & Governance","targetAudience":"Security teams, SREs","durationHours":28,"description":"What happens when AI fails in production \u2014 incident classification, model rollback, kill switches, root-cause analysis, and post-incident review.","objectives":["Classify and respond to AI incidents in production","Implement model rollback and kill switches","Build human escalation and audit trail processes","Conduct root-cause analysis for AI failures","Perform post-incident review and process improvement"]},{"id":"sp-vendor-risk","title":"AI Supply Chain Risk Management","track":"security-governance","level":5,"category":"Security & Governance","targetAudience":"Procurement, risk managers, IT leads","durationHours":24,"description":"Third-party AI risk, vendor assessment, model provenance, open-source risk, API dependencies, and AI procurement governance.","objectives":["Assess third-party AI and vendor risk","Evaluate model provenance and open-source model licensing","Manage API dependencies and software supply chain risk","Govern data-sharing agreements and prevent vendor lock-in","Build AI procurement frameworks"]}]};
+
+  let allCourses = [];
+  let levels = [];
+  let activeFilter = 'all';
+
+  function init() {
+    levels = COURSE_DATA.levels;
+    const loadCourses = (window.AIRTABLE) ? AIRTABLE.loadCourses() : Promise.resolve(COURSE_DATA.courses);
+    loadCourses.then(courses => {
+      allCourses = courses && courses.length ? courses : COURSE_DATA.courses;
+      buildFilters();
+      render();
+    });
+  }
+
+  function buildFilters() {
+    const tracks = [...new Set(allCourses.map(c => c.track))];
+    const bar = document.getElementById('filterBar');
+    bar.innerHTML = `<button class="filter-btn active" data-filter="all">All Tracks</button>` +
+      tracks.map(t => `<button class="filter-btn" data-filter="${t}">${t.replace(/-/g,' ')}</button>`).join('');
+    bar.addEventListener('click', e => {
+      if (!e.target.classList.contains('filter-btn')) return;
+      bar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      activeFilter = e.target.dataset.filter;
+      render();
+    });
+  }
+
+  function render() {
+    const container = document.getElementById('roadmap');
+    container.innerHTML = '';
+    let totalCourses = 0;
+    let totalHours = 0;
+
+    levels.forEach(level => {
+      let courses = allCourses.filter(c => c.level === level.level);
+      if (activeFilter !== 'all') courses = courses.filter(c => c.track === activeFilter);
+      if (courses.length === 0) return;
+
+      totalCourses += courses.length;
+      totalHours += courses.reduce((s,c) => s + c.durationHours, 0);
+
+      const color = LEVEL_COLORS[level.level - 1] || '#666';
+      const section = document.createElement('div');
+      section.className = 'level-section';
+      section.innerHTML = `
+        <div class="level-header">
+          <div class="level-badge" style="background:${color}">${level.level}</div>
+          <div class="level-info">
+            <h2>${level.name}</h2>
+            <p>${level.description}</p>
+          </div>
+          <div class="level-stats">
+            <span>${courses.length}</span> course${courses.length!==1?'s':''} &middot;
+            <span>${courses.reduce((s,c)=>s+c.durationHours,0)}</span> hours
+          </div>
+        </div>
+        <div class="courses-grid">
+          ${courses.map(c => `
+            <div class="course-card" data-id="${c.id}">
+              <div class="card-top">
+                <span class="track-tag">${c.track.replace(/-/g,' ')}</span>
+                <span class="duration-tag">${c.durationHours}h</span>
+              </div>
+              <h3>${c.title}</h3>
+              <div class="audience">${c.targetAudience}</div>
+              <div class="description">${c.description}</div>
+              <button class="objectives-toggle" onclick="toggleObj(this)">Show objectives</button>
+              <ul class="objectives-list">
+                ${c.objectives.map(o => `<li>${o}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      container.appendChild(section);
+    });
+
+    if (totalCourses === 0) {
+      container.innerHTML = '<div class="empty-state">No courses match the selected filter.</div>';
+    }
+  }
+
+  window.toggleObj = function(btn) {
+    const list = btn.nextElementSibling;
+    const isOpen = list.classList.toggle('open');
+    btn.textContent = isOpen ? 'Hide objectives' : 'Show objectives';
+  };
+
+  init();
+})();
+</script>
+</body>
+</html>
